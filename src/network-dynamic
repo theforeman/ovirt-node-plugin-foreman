@@ -14,11 +14,18 @@
 . /etc/rc.d/init.d/functions
 
 configure() {
+	bootif=$(cat /proc/cmdline | grep -io 'BOOTIF=\S*' | tail -n1 | tr A-F- a-f: | cut -d: -f2-7)
+	foreman_name="mac$bootif"
+
+	# configure hostname
+	hostname "$foreman_name"
+	export HOSTNAME="$foreman_name"
+
+	# configure interfaces
 	for i in /sys/class/net/*; do
 		dev=$(basename $i)
 		[[ "$dev" == "lo" ]] && continue
 		mac=$(cat /sys/class/net/$dev/address | tr A-F- a-f:)
-		bootif=$(cat /proc/cmdline | grep -io 'BOOTIF=\S*' | tail -n1 | tr A-F- a-f: | cut -d: -f2-7)
 		if [[ "$mac" == "$bootif" ]]; then
 			peerdns=yes
 			defroute=yes
