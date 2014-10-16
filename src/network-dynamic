@@ -21,8 +21,10 @@ configure() {
 		bootif=$(cat /proc/cmdline | grep -io 'BOOTIF=\S*' | tail -n1 | tr A-F- a-f: | cut -d: -f2-7)
 		if [[ "$mac" == "$bootif" ]]; then
 			peerdns=yes
+			defroute=yes
 		else
 			peerdns=no
+			defroute=no
 		fi
 		echo -n $"Configuring $dev ($mac) network interface: "
 		script=/etc/sysconfig/network-scripts/ifcfg-$dev
@@ -32,6 +34,7 @@ NM_CONTROLLED=no
 ONBOOT=yes
 BOOTPROTO=dhcp
 PEERDNS=$peerdns
+DEFROUTE=$defroute
 EONS
 		echo
 		# prevent from overwriting our configuration
